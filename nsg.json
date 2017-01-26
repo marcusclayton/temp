@@ -52,6 +52,6 @@
   "outputs": {
     "result": {
       "type": "object",
-      "value": "[reference(parameters('linkedNSGName'))]"
+      "value": "[reference(concat('Microsoft.Network/networkSecurityGroups/', parameters('linkedNSGName')),providers('Microsoft.Network', 'networkSecurityGroups').apiVersions[0])]"
     }  }
 }
