@@ -2,6 +2,9 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "linkedNSGName": {
+        "type": "string"
+    },
     "vnetName": {
       "type": "string"
     },
@@ -49,7 +52,8 @@
     }
   },
   "variables": {
-    "templateBaseURL": "dsf",
+    "templateBaseUrl": "https://raw.githubusercontent.com/marcusclayton/temp/master/",
+    "nsgTemplateUrl": "[concat(variables('templateBaseUrl'), 'nsg.json')]",
     "vnetPrefix": "[parameters('vnetPrefix')]",
     "trustSubnetName": "[parameters('trustSubnetName')]",
     "trustSubnetPrefix": "[parameters('trustSubnetPrefix')]",
@@ -57,6 +61,26 @@
     "untrustSubnetPrefix": "[parameters('untrustSubnetPrefix')]"
   },
   "resources": [
+    {
+      "apiVersion": "2015-01-01",
+      "name": "linkedTemplate",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "incremental",
+        "templateLink": {
+          "uri": "[variables('nsgTemplateUrl')]",
+          "contentVersion": "1.0.0.0"
+        }
+      },
+      "parameters": {
+            "linkedNSGName": {"value":"[parameters('linkedNSGName')]"},
+            "vnetPrefix": {"value":"[parameters('vnetPrefix')]"},
+            "vnetName": {"value":"[parameters('vnetName')]"}
+      }
+    },
+
+
+
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkSecurityGroups",
