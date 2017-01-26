@@ -52,6 +52,6 @@
   "outputs": {
     "result": {
       "type": "object",
-      "value": "[reference('linkedNSGName')]"
+      "value": "[reference(parameters('linkedNSGName'))]"
     }  }
 }
