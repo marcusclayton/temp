@@ -316,5 +316,10 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+"result": {
+      "type": "object",
+      "value": "[reference('linkedTemplate').outputs.result]"
+    }
+  }
 }
