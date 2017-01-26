@@ -70,12 +70,12 @@
         "templateLink": {
           "uri": "[variables('nsgTemplateUrl')]",
           "contentVersion": "1.0.0.0"
-        }
       },
       "parameters": {
             "linkedNSGName": {"value":"[parameters('linkedNSGName')]"},
             "vnetPrefix": {"value":"[parameters('vnetPrefix')]"},
             "vnetName": {"value":"[parameters('vnetName')]"}
+      }
       }
     },
 
