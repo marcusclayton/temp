@@ -15,7 +15,7 @@
       }
     },
     "trustSubnetName": {
-      "type": "",
+      "type": "string",
       "metadata": {
         "description": "Name for the trust subnet."
       }
@@ -66,7 +66,7 @@
       "name": "linkedTemplate",
       "type": "Microsoft.Resources/deployments",
       "properties": {
-        "mode": "incremental",
+        "mode": "Incremental",
         "templateLink": {
           "uri": "[variables('nsgTemplateUrl')]",
           "contentVersion": "1.0.0.0"
