@@ -1,0 +1,296 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnetName": {
+      "type": "string"
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "CIDR prefix for the vnet address space"
+      }
+    },
+    "trustSubnetName": {
+      "type": "",
+      "metadata": {
+        "description": "Name for the trust subnet."
+      }
+    },
+    "trustSubnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "CIDR address prefix for the trust subnet."
+      }
+    },
+    "untrustSubnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the untrust subnet."
+      }
+    },
+    "untrustSubnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "CIDR address prefix for the untrust subnet."
+      }
+    },
+    "trustNSGName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the trust subnet NSG."
+      }
+    },
+    "untrustNSGName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name for the untrust subnet NSG."
+      }
+    }
+  },
+  "variables": {
+    "templateBaseURL": "dsf",
+    "vnetPrefix": "[parameters('vnetPrefix')]",
+    "trustSubnetName": "[parameters('trustSubnetName')]",
+    "trustSubnetPrefix": "[parameters('trustSubnetPrefix')]",
+    "untrustSubnetName": "[parameters('untrustSubnetName')]",
+    "untrustSubnetPrefix": "[parameters('untrustSubnetPrefix')]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('trustNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - Trust"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Outside-From-IP",
+            "properties": {
+              "description": "Allow-Outside-From-IP",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "69.181.253.74/32",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-Intra",
+            "properties": {
+              "description": "Allow intra network traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('trustSubnetPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-Zscaler-Dallas-PAT-IP-range",
+            "properties": {
+              "description": "Allow-Zscaler-Dallas-PAT-IP-range",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.50.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-EQ-External-IP-range",
+            "properties": {
+              "description": "Allow-EQ-External-IP-range",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.50.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-TPG-IT",
+            "properties": {
+              "description": "Allow TPG IT",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "10.0.0.0/8",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Default-Deny",
+            "properties": {
+              "description": "Default-Deny if we don't match Allow rule",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 500,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('untrustNSGName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "NSG - unTrust"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Allow-Outside-From-IP",
+            "properties": {
+              "description": "Allow-Outside-From-IP",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "69.181.253.74/32",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-Intra",
+            "properties": {
+              "description": "Allow intra network traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "[variables('trustSubnetPrefix')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-Zscaler-Dallas-PAT-IP-range",
+            "properties": {
+              "description": "Allow-Zscaler-Dallas-PAT-IP-range",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.50.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-EQ-External-IP-range",
+            "properties": {
+              "description": "Allow-EQ-External-IP-range",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "192.168.50.0/24",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Allow-TPG-IT",
+            "properties": {
+              "description": "Allow TPG IT",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "10.0.0.0/8",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 130,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Default-Deny",
+            "properties": {
+              "description": "Default-Deny if we don't match Allow rule",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 500,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('vnetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('trustNSGName'))]",
+        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('untrustNSGName'))]"
+      ],
+      "tags": {
+        "displayName": "[parameters('vnetName')]"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('vnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('trustSubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('trustSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('trustNSGName'))]"
+              }
+            }
+          },
+          {
+            "name": "[variables('untrustSubnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('untrustSubnetPrefix')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('untrustNSGName'))]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {}
+}
